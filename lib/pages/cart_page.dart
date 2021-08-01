@@ -24,6 +24,7 @@ class _CartPageState extends State<CartPage>{
   List<CartItem> cartItem;
 
   TextEditingController controller = new TextEditingController();
+  SharedPref sharedPref =SharedPref();
   bool isChecked2 = false;
   bool _isFavorite = false;
   bool _istextnumber = false;
@@ -31,7 +32,7 @@ class _CartPageState extends State<CartPage>{
   String _icostalocnumber = "21";
   String number = "0";
   bool _isostaosnumbervisible = false;
-  int _currentIntValue = 10;
+  List<int> _currentIntValue = [];
   ProductApiProvider _pro = ProductApiProvider();
   @override
   void initState(){
@@ -43,14 +44,18 @@ class _CartPageState extends State<CartPage>{
   }
 
   Future<void> getCarts()async{
+    _currentIntValue.clear();
     cartItem= await prefs.read();
-    if(cartItem.length>0){
+    if(cartItem.isNotEmpty){
       for(int i =0;i<cartItem.length;i++){
         ProductDetailResponse gh= await _pro.getById(cartItem[i].slug);
+        _currentIntValue.add(cartItem[i].pieces);
         cartItem[i].image=gh.data.photos[0].toString();
         cartItem[i].name=gh.data.name;
         cartItem[i].isWishlist=false;
         cartItem[i].price=gh.data.priceLower;
+        cartItem[i].brandName=gh.data.brand.name;
+        cartItem[i].brandSlug=gh.data.brand.slug;
       }
       isLoaded=true;
       print(cartItem[0].slug);
@@ -247,7 +252,15 @@ class _CartPageState extends State<CartPage>{
                       //    color: Color.fromRGBO(242, 243, 245, 1),
                           height: 8.0,
                         ),
-                    itemBuilder: (context, index) => cartItemWidget(cartItem[index],),
+                      itemBuilder: (context, index){
+
+                        return  InkWell(
+                          onTap: (){
+                            NoomiKeys.productSlug=cartItem[index].slug;
+                          NoomiKeys.navKey.currentState.pushNamed("/product");},
+                          child:cartItemWidget(cartItem[index],index) ,
+                        );
+                      }
                   ),
                   // ),
                   Container(
@@ -436,7 +449,7 @@ class _CartPageState extends State<CartPage>{
     );
   }
 
-  Widget cartItemWidget(CartItem cartItem1){
+  Widget cartItemWidget(CartItem cartItem1,int indexMain){
     return Container(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -451,11 +464,18 @@ class _CartPageState extends State<CartPage>{
                   child: InkWell(
                     onTap: (){},
                     child: Row(
-                      children: [
+                      children:  [
                         Icon(Icons.store_mall_directory_outlined),
                         SizedBox(width: 5),
                         // number == "0" ? Text("1 шт.") : Text(number + "шт."),
-                        Text("Elmakon"),
+                       InkWell(
+                         onTap: (){
+                           NoomiKeys.categorySlug=cartItem1.brandSlug.toString();
+                           NoomiKeys.navKey.currentState.pushNamed("/shopsWidget");
+                         },
+                         child: Text(cartItem1.brandName),
+                       ) ,
+
                         SizedBox(width: 5),
                         Icon(Icons.arrow_forward_ios)
                       ],
@@ -673,16 +693,20 @@ class _CartPageState extends State<CartPage>{
                             IconButton(
                               icon: Icon(Icons.remove_circle_outline_outlined,size: 33,),
                               onPressed: () => setState(() {
-                                final newValue = _currentIntValue - 1;
-                                _currentIntValue = newValue.clamp(0, 100);
+                                final newValue = _currentIntValue[indexMain] - 1;
+                                _currentIntValue[indexMain] = newValue.clamp(1, 100);
+                                cartItem1.pieces=_currentIntValue[indexMain];
+                                sharedPref.save(cartItem1,widget.updateCarts);
                               }),
                             ),
-                            Text('$_currentIntValue'),
+                            Text(_currentIntValue[indexMain].toString()),
                             IconButton(
                               icon: Icon(Icons.add_box_outlined,size: 33,),
                               onPressed: () => setState(() {
-                                final newValue = _currentIntValue + 1;
-                                _currentIntValue = newValue.clamp(0, 100);
+                                final newValue = _currentIntValue[indexMain] + 1;
+                                _currentIntValue[indexMain] = newValue.clamp(1, 100);
+                                cartItem1.pieces=_currentIntValue[indexMain];
+                                sharedPref.save(cartItem1,widget.updateCarts);
                               }),
                             ),
                           ],

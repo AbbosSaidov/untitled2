@@ -8,9 +8,13 @@ class CartItem{
       this.isWishlist,
       this.price,
       this.name,
+      this.brandName,
+      this.brandSlug,
    });
    String slug;
    String name;
+   String brandName;
+   String brandSlug;
    int pieces;
    double price;
    String image;

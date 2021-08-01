@@ -26,7 +26,7 @@ class ProductFilterPage extends StatefulWidget{
 }
 
 class _ProductFilterPageState extends State<ProductFilterPage>{
-  String dropdownValue = 'Сортировка';
+  String dropdownValue = null;
   String filterValue = '?';
   String mainFilterSlug = '';
   String dropdownValueSlug = 'sort_by=popular';
@@ -42,12 +42,14 @@ class _ProductFilterPageState extends State<ProductFilterPage>{
   RangeValues _currentRangeValues;
   List<List<bool>> _isChecked=[];
   List<bool> _isChecked2=[];
+  List<String> list_items=['Популярные', 'Новинки', 'Сначала дешевые', 'Сначала дорогие', 'По уровню скидки'];
   TextEditingController textControllerOt = new TextEditingController();
   TextEditingController textControllerDo = new TextEditingController();
   int rowNumber=3;
   int colorId=-1;
   String brandId="null";
   int scrollL=1;
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -97,9 +99,18 @@ class _ProductFilterPageState extends State<ProductFilterPage>{
                                 icon: Icon(Icons.widgets_outlined),
                                 onPressed:(){if(rowNumber>2){rowNumber=1;}else{rowNumber=rowNumber+1;}setState((){});},
                               ),
-                              DropdownButton<String>(
+                            DropdownButton<String>(
+                              selectedItemBuilder: (BuildContext context)
+                              {
+                                return list_items.map<Widget>((String item) {
+                                  return Row(children: [Text(item),Icon(Icons.arrow_drop_down_sharp)],);
+                                }).toList();
+                              },
+                              hint:Row(children: [Text("Сортировка"),Icon(Icons.arrow_drop_down_sharp)],),
                                 value: dropdownValue,
-                                icon: const Icon(Icons.arrow_drop_down,size: 24,),
+                                icon: Visibility (visible:false, child: Icon(Icons.arrow_downward)),
+                                onTap: (){
+                                setState((){});},
                                 iconSize: 24,
                                 elevation: 16,
                                 //style: const TextStyle(color: Colors.deepPurple),
@@ -111,7 +122,6 @@ class _ProductFilterPageState extends State<ProductFilterPage>{
                                   type1=true;
                                   switch(newValue){
                                     case "Популярные":dropdownValueSlug ="sort_by=popular";break;
-                                    case "Сортировка":dropdownValueSlug ="sort_by=popular";break;
                                     case "Новинки":dropdownValueSlug ="sort_by=newest";break;
                                     case "Сначала дешевые":dropdownValueSlug ="sort_by=price-asc";break;
                                     case "Сначала дорогие":dropdownValueSlug ="sort_by=price-desc";break;
@@ -121,13 +131,12 @@ class _ProductFilterPageState extends State<ProductFilterPage>{
                                   isFiltered=true;
                                   setState((){});
                                 },items:
-                              <String>['Сортировка','Популярные', 'Новинки', 'Сначала дешевые', 'Сначала дорогие', 'По уровню скидки']
-                                  .map<DropdownMenuItem<String>>((String value){
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
+                            list_items.map((String item) {
+                              return DropdownMenuItem<String>(
+                                child: Text('$item'),
+                                value: item,
+                              );
+                            }).toList(),
                               ),
                               IconButton(
                                 icon: Icon(Icons.filter_list),
@@ -193,11 +202,11 @@ class _ProductFilterPageState extends State<ProductFilterPage>{
   void showDialogFilter(var state){
     showDialog(
         context: context,
-        builder: (BuildContext conte) => new AlertDialog(
+        builder: (BuildContext conte) => AlertDialog(
             insetPadding: EdgeInsets.zero,
             contentPadding: EdgeInsets.zero,
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
                 borderRadius:
                 BorderRadius.all(
                     Radius.circular(10.0))),

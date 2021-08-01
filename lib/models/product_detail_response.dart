@@ -264,20 +264,24 @@ class Brand {
     this.name,
     this.logo,
     this.links,
+    this.slug,
   });
 
   final dynamic name;
   final dynamic logo;
+  final dynamic slug;
   final BrandLinks links;
 
   Brand copyWith({
     dynamic name,
     dynamic logo,
+    dynamic slug,
     BrandLinks links,
   }) =>
       Brand(
         name: name ?? this.name,
         logo: logo ?? this.logo,
+        slug: slug ?? this.slug,
         links: links ?? this.links,
       );
 
@@ -288,12 +292,14 @@ class Brand {
   factory Brand.fromMap(Map<String, dynamic> json) => Brand(
         name: json["name"],
         logo: json["logo"],
+    slug: json["slug"],
         links: BrandLinks.fromMap(json["links"]),
       );
 
   Map<String, dynamic> toMap()=>{
         "name": name,
         "logo": logo,
+        "slug": slug,
         "links": links.toMap(),
       };
 }

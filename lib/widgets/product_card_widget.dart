@@ -380,6 +380,7 @@ class _ProductCardWidgetState extends State<ProductCardWidget>{
                         children: [
                           _isBestSaller(widget.isBestSaller),
                           Container(
+                            height: 27,//MediaQuery. of(context). size. width/13,
                             width: double.infinity,
                             child: isDiscount
                                 ? Wrap(
@@ -395,7 +396,7 @@ class _ProductCardWidgetState extends State<ProductCardWidget>{
                                   ),
                                 ),
                                 Container(
-                                  padding: EdgeInsets.only(left: 3, top: 2),
+                                  //padding: EdgeInsets.only(left: 3, top: 2),
                                   child: Text(
                                  //   NumberFormat.currency(locale: 'eu',symbol: "сум").format(product.basePrice),
                                     NumberFormat("#,##0 сум", "en_US").format(product.basePrice),
@@ -410,14 +411,17 @@ class _ProductCardWidgetState extends State<ProductCardWidget>{
                                 )
                               ],
                             )
-                                : Text(
+                                : Align(
+                              alignment: Alignment.center,
+                              child: Text(
+
                               NumberFormat("#,##0 сум", "en_US").format(product.basePrice),
-                           //   NumberFormat.currency(locale: 'eu',symbol: "сум").format(product.basePrice),
+                              //   NumberFormat.currency(locale: 'eu',symbol: "сум").format(product.basePrice),
                               style: TextStyle(
                                 color: MyColors.hibiscus,
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
+                            ),),
                           ),
                           widget.named
                               ? Container(
